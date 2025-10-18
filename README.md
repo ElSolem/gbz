@@ -46,17 +46,46 @@ titles.
 
 ![Screenshot of a 3D scene in the Godot Engine editor](https://raw.githubusercontent.com/godotengine/godot-design/master/screenshots/editor_tps_demo_1920x1080.jpg)
 
-## Getting the engine
+## 🧭 Getting the Engine
 
-### Binary downloads
+### 📦 Binary Downloads (Not Provided)
 
-Official binaries for the Godot editor and the export templates can be found
-[on the Godot website](https://godotengine.org/download).
+GBZ is an experimental fork of the Godot Engine and **does not offer official prebuilt binaries**.
+To run GBZ, you’ll need to build it yourself from source. This ensures that all modifications (Zeroth Float Model and rendering overrides) are properly integrated with your environment.
 
-### Compiling from source
+---
 
-[See the official docs](https://docs.godotengine.org/en/latest/engine_details/development/compiling)
-for compilation instructions for every supported platform.
+### 🏗️ Compiling from Source
+
+Building GBZ works just like building standard Godot — with a few tweaks under the hood.
+
+Follow the build instructions in [`BUILD.md`](./BUILD.md) to compile the engine for your platform using SCons:
+
+```bash
+git clone https://github.com/elsolem/gbz.git
+cd gbz
+scons platform=linuxbsd target=editor dev_build=yes
+```
+
+Once compiled, the binary will appear in:
+
+```
+./bin/godot.linuxbsd.editor.dev.x86_64
+```
+
+Run normally:
+
+```bash
+./bin/godot.linuxbsd.editor.dev.x86_64
+```
+
+Or in OpenGL compatibility mode:
+
+```bash
+./bin/godot.linuxbsd.editor.dev.x86_64 --rendering-driver opengl3
+```
+
+---
 
 ## Community and contributing
 
