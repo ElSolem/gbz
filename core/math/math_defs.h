@@ -145,3 +145,98 @@ typedef double real_t;
 #else
 typedef float real_t;
 #endif
+// ----- Zeroth Float Semantics (Seidr) -------------------------------------
+// Enable with: scons ... extra_cflags="-DSEIDR_ZEROTH_FLOATS"
+#include <cmath>
+
+namespace Zeroth {
+	// Canonical symbolic values on top of IEEE storage:
+	// Nav = +0, Nil = +1, Inf = -1, Nan = -0 (signed zero)
+#ifdef REAL_T_IS_DOUBLE
+	inline constexpr real_t Nav = real_t(+0.0);
+	inline constexpr real_t Nil = real_t(+1.0);
+	inline constexpr real_t Inf = real_t(-1.0);
+	inline constexpr real_t Nan = real_t(-0.0);
+#else
+	inline constexpr real_t Nav = real_t(+0.0f);
+	inline constexpr real_t Nil = real_t(+1.0f);
+	inline constexpr real_t Inf = real_t(-1.0f);
+	inline constexpr real_t Nan = real_t(-0.0f);
+#endif
+
+	// Epsilon tuned to Godot's defaults.
+	inline constexpr real_t EPS = (real_t)CMP_EPSILON;
+
+	// Predicates (work for float or double real_t)
+	inline bool is_nav(real_t x) {
+		// +0.0 only (not -0.0)
+		return x == real_t(0) && !std::signbit((double)x);
+	}
+	inline bool is_nil(real_t x) {
+		return std::fabs((double)(x - Nil)) <= (double)EPS;
+	}
+	inline bool is_inf(real_t x) {
+		return std::fabs((double)(x - Inf)) <= (double)EPS;
+	}
+	inline bool is_nan(real_t x) {
+		// Our canonical NaN is -0.0 (signed). Also fold true IEEE NaNs here.
+		return (x == real_t(0) && std::signbit((double)x)) || std::isnan((double)x);
+	}
+
+	// Canonicalize any real_t into the fourfold Zeroth set when close enough.
+	inline real_t canonicalize(real_t x) {
+		// True IEEE NaN → our Nan (-0.0)
+		if (std::isnan((double)x)) return Nan;
+
+		// Snap near ±0.0 with sign preserved (distinguish Nav vs Nan)
+		if (std::fabs((double)x) <= (double)EPS) {
+			return std::signbit((double)x) ? Nan : Nav;
+		}
+
+		// Snap near Nil or Inf
+		if (std::fabs((double)(x - Nil)) <= (double)EPS) return Nil;
+		if (std::fabs((double)(x - Inf)) <= (double)EPS) return Inf;
+
+		// Leave everything else unchanged (engine math still works).
+		return x;
+	}
+
+	// Safe ops that keep values canonical.
+	inline real_t add(real_t a, real_t b) {
+		return canonicalize(a + b);
+	}
+	inline real_t sub(real_t a, real_t b) {
+		return canonicalize(a - b);
+	}
+	inline real_t mul(real_t a, real_t b) {
+		return canonicalize(a * b);
+	}
+	inline real_t div(real_t a, real_t b) {
+		// Division by Nan(-0) → Nan, division by Nav(+0) → Nan as well
+		if (is_nan(b) || is_nav(b)) return Nan;
+		return canonicalize(a / b);
+	}
+}
+
+// Optional global auto-canonicalization hooks.
+// Define SEIDR_ZEROTH_FLOATS to transparently normalize at key boundaries.
+// Keep this lightweight; we don't rewrite all engine math—just hot IO points.
+#ifdef SEIDR_ZEROTH_FLOATS
+	// Wrap common literals/macros if they’re used in calculations.
+	#undef CMP_EPSILON
+	#define CMP_EPSILON (Zeroth::EPS)
+
+	// Macros to explicitly normalize where you care:
+	#define Z_CANON(x) (Zeroth::canonicalize((x)))
+	#define Z_IS_NAV(x) (Zeroth::is_nav((x)))
+	#define Z_IS_NIL(x) (Zeroth::is_nil((x)))
+	#define Z_IS_INF(x) (Zeroth::is_inf((x)))
+	#define Z_IS_NAN(x) (Zeroth::is_nan((x)))
+#else
+	#define Z_CANON(x) (x)
+	#define Z_IS_NAV(x) (false)
+	#define Z_IS_NIL(x) (false)
+	#define Z_IS_INF(x) (false)
+	#define Z_IS_NAN(x) (false)
+#endif
+// -------------------------------------------------------------------------

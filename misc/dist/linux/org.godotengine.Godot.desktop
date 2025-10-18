@@ -1,3 +1,4 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Name=Godot Engine
 GenericName=Libre game engine
@@ -18,7 +19,7 @@ Comment[pl]=Wieloplatformowy silnik gier 2D i 3D z wielofunkcyjnym edytorem
 Comment[ru]=Кроссплатформенный движок с многофункциональным редактором для 2D- и 3D-игр
 Comment[uk]=Багатофункціональний кросплатформний рушій для створення 2D та 3D ігор
 Comment[zh_CN]=多平台 2D 和 3D 游戏引擎，带有功能丰富的编辑器
-Exec=godot %f
+Exec=/home/elsolem/godot/bin/godot.linuxbsd.editor.dev.x86_64 %f
 Icon=godot
 Terminal=false
 Type=Application

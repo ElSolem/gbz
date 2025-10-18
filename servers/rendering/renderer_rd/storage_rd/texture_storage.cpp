@@ -779,13 +779,29 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 	Ref<Image> image = _validate_texture_format(p_image, ret_format);
 
 	Texture texture;
-
 	texture.type = TextureStorage::TYPE_2D;
 
-	texture.width = p_image->get_width();
-	texture.height = p_image->get_height();
+	// --- PRE-SHRINK IF NEEDED (CPU-side, before upload) ---
+	uint64_t hw2d = RD::get_singleton()->limit_get(RD::Limit::LIMIT_MAX_TEXTURE_SIZE_2D);
+	int iw = image->get_width();
+	int ih = image->get_height();
+
+	if ((uint64_t)iw > hw2d || (uint64_t)ih > hw2d) {
+		int nw = (int)MIN<uint64_t>((uint64_t)iw, hw2d);
+		int nh = (int)MIN<uint64_t>((uint64_t)ih, hw2d);
+		// Duplicate then resize the copy so we don't mutate the original ref elsewhere.
+		Ref<Image> resized = image->duplicate();
+		resized->resize(nw, nh, Image::INTERPOLATE_LANCZOS); // any filter is fine here
+		image = resized; // use the safe-size image from here on
+		// Optional: print once so you know it clamped.
+		WARN_PRINT("Clamped 2D texture to fit device: " + itos(iw) + "x" + itos(ih) + " -> " + itos(nw) + "x" + itos(nh));
+	}
+	// ------------------------------------------------------
+
+	texture.width  = image->get_width();   // use possibly-resized image
+	texture.height = image->get_height();
 	texture.layers = 1;
-	texture.mipmaps = p_image->get_mipmap_count() + 1;
+	texture.mipmaps = image->get_mipmap_count() + 1;
 	texture.depth = 1;
 	texture.format = p_image->get_format();
 	texture.validated_format = image->get_format();
@@ -796,7 +812,7 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 
 	RD::TextureFormat rd_format;
 	RD::TextureView rd_view;
-	{ //attempt register
+	{
 		rd_format.format = texture.rd_format;
 		rd_format.width = texture.width;
 		rd_format.height = texture.height;
@@ -806,22 +822,29 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 		rd_format.texture_type = texture.rd_type;
 		rd_format.samples = RD::TEXTURE_SAMPLES_1;
 		rd_format.usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT | RD::TEXTURE_USAGE_CAN_COPY_FROM_BIT;
+
 		if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 			rd_format.shareable_formats.push_back(texture.rd_format);
 			rd_format.shareable_formats.push_back(texture.rd_format_srgb);
 		}
 	}
+
 	{
 		rd_view.swizzle_r = ret_format.swizzle_r;
 		rd_view.swizzle_g = ret_format.swizzle_g;
 		rd_view.swizzle_b = ret_format.swizzle_b;
 		rd_view.swizzle_a = ret_format.swizzle_a;
 	}
-	Vector<uint8_t> data = image->get_data(); //use image data
+
+	Vector<uint8_t> data = image->get_data();
 	Vector<Vector<uint8_t>> data_slices;
 	data_slices.push_back(data);
+
 	texture.rd_texture = RD::get_singleton()->texture_create(rd_format, rd_view, data_slices);
-	ERR_FAIL_COND(texture.rd_texture.is_null());
+
+	// If this still fails, we want a loud, single failure (shouldn't happen after clamp).
+	ERR_FAIL_COND_MSG(texture.rd_texture.is_null(), "Texture allocation failed even after CPU-side clamp.");
+
 	if (texture.rd_format_srgb != RD::DATA_FORMAT_MAX) {
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
@@ -831,7 +854,6 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 		}
 	}
 
-	//used for 2D, overridable
 	texture.width_2d = texture.width;
 	texture.height_2d = texture.height;
 	texture.is_render_target = false;
@@ -840,6 +862,10 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 
 	texture_owner.initialize_rid(p_texture, texture);
 }
+
+
+
+
 
 void TextureStorage::texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type) {
 	ERR_FAIL_COND(p_layers.is_empty());
