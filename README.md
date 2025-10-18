@@ -1,7 +1,7 @@
 GBZ — Godot Binary Zeroth
 
 A Forward+ rendering experiment with Zeroth float semantics and relaxed hardware constraints.
-🧠 Project Overview
+## Project Overview
 
 GBZ is a custom fork of the Godot Engine designed to:
 
@@ -46,16 +46,16 @@ titles.
 
 ![Screenshot of a 3D scene in the Godot Engine editor](https://raw.githubusercontent.com/godotengine/godot-design/master/screenshots/editor_tps_demo_1920x1080.jpg)
 
-## 🧭 Getting the Engine
+## Getting the Engine
 
-### 📦 Binary Downloads (Not Provided)
+### Binary Downloads (Not Provided)
 
 GBZ is an experimental fork of the Godot Engine and **does not offer official prebuilt binaries**.
 To run GBZ, you’ll need to build it yourself from source. This ensures that all modifications (Zeroth Float Model and rendering overrides) are properly integrated with your environment.
 
 ---
 
-### 🏗️ Compiling from Source
+### Compiling from Source
 
 Building GBZ works just like building standard Godot — with a few tweaks under the hood.
 
