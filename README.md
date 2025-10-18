@@ -1,4 +1,17 @@
-# Godot Engine
+GBZ — Godot Binary Zeroth
+
+A Forward+ rendering experiment with Zeroth float semantics and relaxed hardware constraints.
+🧠 Project Overview
+
+GBZ is a custom fork of the Godot Engine designed to:
+
+    Replace standard float definitions with Zeroth Float Model (Nav = 0, Nil = 1, Inf = -1, Nan = -0)
+    Bypass or relax hard GPU texture dimension checks, making Forward+ run on non-GPU or integrated GPU systems
+    Create a reproducible and minimal rendering sandbox for testing engines on unusual or constrained hardware.
+
+This fork was built and tested on a quantum-modded Intel i7 system with no discrete GPU, demonstrating that Godot’s Forward+ path can run even in extremely non-standard environments when checks are carefully altered.
+
+Author: @elsolem Repo: https://github.com/elsolem/gbz
 
 <p align="center">
   <a href="https://godotengine.org">
