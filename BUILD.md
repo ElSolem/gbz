@@ -1,12 +1,8 @@
-Of course. Here’s an updated and polished **`BUILD.md`** with a clear header and project identity at the top—so anyone discovering your repo instantly knows what it is.
-
----
-
 # GBZ — Godot Binary Zeroth
 
 *A Forward+ rendering experiment with Zeroth float semantics and relaxed hardware constraints.*
 
-## 🧠 Project Overview
+## Project Overview
 
 **GBZ** is a custom fork of the [Godot Engine](https://godotengine.org) designed to:
 
@@ -21,7 +17,7 @@ Repo: [https://github.com/elsolem/gbz](https://github.com/elsolem/gbz)
 
 ---
 
-## 🧰 Prerequisites
+## Prerequisites
 
 ### Linux (Debian/Ubuntu/Mint)
 
@@ -44,7 +40,7 @@ libxi-dev libxrandr-dev yasm
 
 ---
 
-## 📥 Clone the Repository
+## Clone the Repository
 
 ```bash
 git clone https://github.com/elsolem/gbz.git
@@ -59,7 +55,7 @@ git checkout main
 
 ---
 
-## 🏗️ Build the Engine
+## Build the Engine
 
 ### Debug / Dev Build
 
@@ -81,7 +77,7 @@ scons platform=linuxbsd target=template_release tools=no
 
 ---
 
-## 🧠 Rendering Modes
+## Rendering Modes
 
 GBZ supports both rendering paths:
 
@@ -101,7 +97,7 @@ GBZ supports both rendering paths:
 
 ---
 
-## 🧪 Notes for Testers
+## Notes for Testers
 
 * Texture dimension checks are bypassed or padded to allow rendering even on non-discrete GPU systems.
 * Warning:
@@ -115,7 +111,7 @@ GBZ supports both rendering paths:
 
 ---
 
-## 🧭 Contributing
+## Contributing
 
 1. Fork the repo
 2. Create a branch for your changes
@@ -128,7 +124,7 @@ GBZ supports both rendering paths:
 
 ---
 
-## 🧰 Optional: Upstream Sync
+## Optional: Upstream Sync
 
 To stay up to date with Godot:
 
@@ -140,11 +136,9 @@ git merge upstream/master
 
 ---
 
-## 🪙 License
+## License
 
 GBZ inherits the [MIT License](https://opensource.org/licenses/MIT) from Godot Engine.
 Zeroth Float Model and rendering patches © 2025 @elsolem.
 
 ---
-
-Would you like me to also include a **“Known Hardware Behavior”** section (e.g. your quantum i7 + no-GPU test results) so testers can compare their system behavior against yours? It makes debugging on their end much easier.
