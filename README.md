@@ -89,8 +89,8 @@ Or in OpenGL compatibility mode:
 
 ## Community and contributing
 ## Editor Note:
-### These instructions are for contributing to the Godot project and links to their resources, this project is not accepting contriubtors
-### This will be updated with proper instructions for future contributions: Oct 18, 2025
+# These instructions are for contributing to the Godot project and links to their resources, this project is not accepting contributors at-this-time;
+# This will be updated with proper instructions for future contributions: Oct 18, 2025
 Godot is not only an engine but an ever-growing community of users and engine
 developers. The main community channels are listed [on the homepage](https://godotengine.org/community).
 
