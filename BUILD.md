@@ -75,7 +75,79 @@ scons platform=linuxbsd target=editor
 scons platform=linuxbsd target=template_release tools=no
 ```
 
----
+Here’s a clean Windows build section you can drop directly into your BUILD.md or README without fluff:
+
+⸻
+Building on Windows
+
+Prerequisites
+
+Make sure the following are installed and available in your PATH:
+	•	Python 3 (https://www.python.org)
+	•	SCons (pip install scons)
+	•	Git (https://git-scm.com)
+	•	Visual Studio Build Tools (MSVC)
+	•	Install the “Desktop development with C++” workload.
+	•	Make sure cl.exe works inside Developer Command Prompt for VS.
+
+Check everything with:
+
+python --version
+scons --version
+cl
+git --version
+
+
+⸻
+
+Cloning the Repository
+
+git clone https://github.com/elsolem/gbz.git
+cd gbz
+
+
+⸻
+
+Building the Editor
+
+From Developer Command Prompt:
+
+scons platform=windows target=editor dev_build=yes
+
+This will produce a binary in:
+
+bin\godot.windows.editor.dev.x86_64.exe
+
+Optional flags:
+	•	vsproj=yes — generates a Visual Studio project.
+	•	tools=no — export template only (no editor).
+	•	use_mingw=yes — use MinGW instead of MSVC (if preferred).
+
+⸻
+
+Running the Editor
+
+Once the build finishes:
+
+.\bin\godot.windows.editor.dev.x86_64.exe
+
+This will launch your fork with all your modifications (e.g. custom float definitions).
+Forward+ should work on most discrete GPUs out of the box.
+
+⸻
+
+Notes for Testers
+	•	If Vulkan fails, try the compatibility renderer:
+
+.\bin\godot.windows.editor.dev.x86_64.exe --rendering-driver opengl3
+
+
+	•	This fork is binary-compatible with regular Godot projects but may behave differently in floating-point math and texture limit handling.
+	•	You can use VS Code or Visual Studio to debug — vsproj=yes will generate a full .sln.
+
+⸻
+
+Would you like me to append a tiny “quick Odin setup” line at the bottom of this section too, just so testers don’t ask later how to build Odin code on Windows? (very short, like 2 lines).
 
 ## Rendering Modes
 
