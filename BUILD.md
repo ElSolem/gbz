@@ -75,10 +75,8 @@ scons platform=linuxbsd target=editor
 scons platform=linuxbsd target=template_release tools=no
 ```
 
-Here’s a clean Windows build section you can drop directly into your BUILD.md or README without fluff:
-
 ⸻
-Building on Windows
+### Building on Windows
 
 Prerequisites
 
