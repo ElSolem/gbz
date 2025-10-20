@@ -120,7 +120,7 @@ GBZ supports both rendering paths:
    ```bash
    scons platform=linuxbsd target=editor dev_build=yes
    ```
-4. Submit a pull request or open an issue detailing hardware behavior.
+4. **Please note pull request will not be accepted at this time: Submit a pull request or open an issue detailing hardware behavior.
 
 ---
 
