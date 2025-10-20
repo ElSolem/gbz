@@ -1,94 +1,84 @@
 # GBZ — Godot Binary Zeroth
 
-*A Forward+ rendering experiment with Zeroth float semantics and relaxed hardware constraints.*
+A Forward+ rendering experiment with Zeroth float semantics and relaxed hardware constraints.
 
 ## Project Overview
 
-**GBZ** is a custom fork of the [Godot Engine](https://godotengine.org) designed to:
+GBZ is a custom fork of the Godot Engine designed to:
+	•	Replace standard float definitions with the Zeroth Float Model (Nav = 0, Nil = 1, Inf = -1, Nan = -0).
+	•	Bypass or relax hard GPU texture dimension checks, allowing Forward+ to run on integrated or non-GPU systems.
+	•	Create a reproducible, minimal rendering sandbox for testing engines on unusual or constrained hardware.
 
-* Replace standard float definitions with **Zeroth Float Model** (`Nav = 0`, `Nil = 1`, `Inf = -1`, `Nan = -0`)
-* **Bypass or relax hard GPU texture dimension checks**, making Forward+ run on non-GPU or integrated GPU systems
-* Create a reproducible and minimal rendering sandbox for testing engines on unusual or constrained hardware.
+This fork was built and tested on a quantum-modded Intel i7 system with no discrete GPU, demonstrating that Godot’s Forward+ path can run in extremely non-standard environments when checks are carefully altered.
 
-This fork was built and tested on a **quantum-modded Intel i7 system** with no discrete GPU, demonstrating that Godot’s Forward+ path can run even in extremely non-standard environments when checks are carefully altered.
+Author: @elsolem
+Repo: https://github.com/elsolem/gbz
 
-Author: **@elsolem**
-Repo: [https://github.com/elsolem/gbz](https://github.com/elsolem/gbz)
-
----
+⸻
 
 ## Prerequisites
 
 ### Linux (Debian/Ubuntu/Mint)
+	•	Git
+	•	SCons (≥ 4.0)
+	•	Python 3.6+
+	•	GCC / G++ build essentials
+	•	Vulkan SDK (optional for Forward+)
+	•	OpenGL drivers (for compatibility mode)
 
-* Git
-* SCons (≥ 4.0)
-* Python 3.6+
-* GCC / G++ build essentials
-* Vulkan SDK *(optional for Forward+)*
-* OpenGL drivers *(for compatibility mode)*
+### Install dependencies:
 
-Install dependencies:
-
-```bash
 sudo apt update
 sudo apt install git scons python3 build-essential pkg-config \
 libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev \
 libglu-dev libasound2-dev libpulse-dev libudev-dev \
 libxi-dev libxrandr-dev yasm
-```
 
----
+
+⸻
 
 ## Clone the Repository
 
-```bash
 git clone https://github.com/elsolem/gbz.git
 cd gbz
-```
 
-Check out the main branch:
+### Checkout the main branch:
 
-```bash
 git checkout main
-```
 
----
 
-## Build the Engine
+⸻
+
+## Build the Engine (Linux)
 
 ### Debug / Dev Build
 
-```bash
 scons platform=linuxbsd target=editor dev_build=yes
-```
 
 ### Release Build
 
-```bash
 scons platform=linuxbsd target=editor
-```
 
 ### Export Templates (optional)
 
-```bash
 scons platform=linuxbsd target=template_release tools=no
-```
+
 
 ⸻
-### Building on Windows
 
-Prerequisites
+## Building on Windows
+
+### Prerequisites
 
 Make sure the following are installed and available in your PATH:
-	•	Python 3 (https://www.python.org)
+	•	Python 3
 	•	SCons (pip install scons)
-	•	Git (https://git-scm.com)
+	•	Git
 	•	Visual Studio Build Tools (MSVC)
 	•	Install the “Desktop development with C++” workload.
-	•	Make sure cl.exe works inside Developer Command Prompt for VS.
+	•	Confirm cl.exe works in Developer Command Prompt for VS.
 
-Check everything with:
+### Check everything:
 
 python --version
 scons --version
@@ -98,7 +88,7 @@ git --version
 
 ⸻
 
-Cloning the Repository
+## Clone the Repository
 
 git clone https://github.com/elsolem/gbz.git
 cd gbz
@@ -106,109 +96,89 @@ cd gbz
 
 ⸻
 
-Building the Editor
+## Build the Editor
 
 From Developer Command Prompt:
 
 scons platform=windows target=editor dev_build=yes
 
-This will produce a binary in:
+Output:
 
 bin\godot.windows.editor.dev.x86_64.exe
 
 Optional flags:
-	•	vsproj=yes — generates a Visual Studio project.
-	•	tools=no — export template only (no editor).
-	•	use_mingw=yes — use MinGW instead of MSVC (if preferred).
+	•	vsproj=yes — generate a Visual Studio project
+	•	tools=no — export template only (no editor)
+	•	use_mingw=yes — use MinGW instead of MSVC
 
 ⸻
 
-Running the Editor
-
-Once the build finishes:
+## Run the Editor
 
 .\bin\godot.windows.editor.dev.x86_64.exe
 
-This will launch your fork with all your modifications (e.g. custom float definitions).
-Forward+ should work on most discrete GPUs out of the box.
+Forward+ should run on most discrete GPUs out of the box.
 
-⸻
-
-Notes for Testers
-	•	If Vulkan fails, try the compatibility renderer:
+### If Vulkan fails:
 
 .\bin\godot.windows.editor.dev.x86_64.exe --rendering-driver opengl3
 
-
-	•	This fork is binary-compatible with regular Godot projects but may behave differently in floating-point math and texture limit handling.
-	•	You can use VS Code or Visual Studio to debug — vsproj=yes will generate a full .sln.
+This forces Compatibility (OpenGL) mode.
 
 ⸻
-
-Would you like me to append a tiny “quick Odin setup” line at the bottom of this section too, just so testers don’t ask later how to build Odin code on Windows? (very short, like 2 lines).
 
 ## Rendering Modes
 
 GBZ supports both rendering paths:
 
-* **Forward+ (Vulkan)** — default:
+Forward+ (Vulkan) — default
 
-```bash
 ./bin/godot.linuxbsd.editor.dev.x86_64
-```
 
-* **Compatibility (OpenGL)** — fallback:
+Compatibility (OpenGL) — fallback
 
-```bash
 ./bin/godot.linuxbsd.editor.dev.x86_64 --rendering-driver opengl3
-```
 
-> Forward+ can still run on many integrated systems despite texture limit warnings due to hardcoded limit overrides in `limit_get`.
+Forward+ can still run on many integrated systems despite texture limit warnings due to hardcoded limit overrides in limit_get.
 
----
+⸻
 
 ## Notes for Testers
+	•	Texture dimension checks are bypassed or padded, allowing rendering even on systems without discrete GPUs.
+	•	The warning
 
-* Texture dimension checks are bypassed or padded to allow rendering even on non-discrete GPU systems.
-* Warning:
+ERROR: Texture dimensions exceed device maximum.
 
-  ```
-  ERROR: Texture dimensions exceed device maximum.
-  ```
+is expected and not fatal.
 
-  is **expected**, not fatal.
-* Please test on standard GPU hardware to observe differences in behavior between patched and upstream Godot.
+	•	Please test on standard GPU hardware to compare patched vs upstream behavior.
 
----
+⸻
 
 ## Contributing
+	1.	Fork the repository
+	2.	Create a feature branch
+	3.	Build and test:
 
-1. Fork the repo
-2. Create a branch for your changes
-3. Build and test:
+scons platform=linuxbsd target=editor dev_build=yes
 
-   ```bash
-   scons platform=linuxbsd target=editor dev_build=yes
-   ```
-4. **Please note pull request will not be accepted at this time: Submit a pull request or open an issue detailing hardware behavior.
 
----
+	4.	Pull requests are not currently accepted, but issues documenting behavior differences across hardware are welcome.
 
-## Optional: Upstream Sync
+⸻
 
-To stay up to date with Godot:
+Optional: Upstream Sync
 
-```bash
 git remote add upstream https://github.com/godotengine/godot.git
 git fetch upstream
 git merge upstream/master
-```
 
----
+
+⸻
 
 ## License
 
-GBZ inherits the [MIT License](https://opensource.org/licenses/MIT) from Godot Engine.
+GBZ inherits the MIT License from Godot Engine.
 Zeroth Float Model and rendering patches © 2025 @elsolem.
 
----
+⸻
